@@ -1,9 +1,25 @@
 import { createPortal } from 'react-dom'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 
 export default function BottomSheet({ isOpen, onClose, children, maxHeight = '85vh' }) {
-  const sheetRef = useRef(null)
+  const sheetRef  = useRef(null)
   const startYRef = useRef(0)
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    window.history.pushState({ bottomSheet: true }, '')
+
+    const handlePopState = () => onClose()
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      if (window.history.state?.bottomSheet) {
+        window.history.back()
+      }
+    }
+  }, [isOpen])
 
   const handleTouchStart = (e) => {
     startYRef.current = e.touches[0].clientY
