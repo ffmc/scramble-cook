@@ -14,7 +14,7 @@ const PROTEIN_COLOURS = {
 
 const PROTEIN_DEFAULT = 'bg-warm-line text-warm-gray'
 
-export default function DayCard({ dayKey, dayLabel, slots, mealType, isLocked, recipes, onSwap }) {
+export default function DayCard({ dayKey, dayLabel, slots, mealType, isLocked, recipes, onSwap, onView }) {
   const showLunch  = mealType === 'lunch'  || mealType === 'both'
   const showDinner = mealType === 'dinner' || mealType === 'both'
   const skipSlot   = useStore(s => s.skipSlot)
@@ -26,17 +26,17 @@ export default function DayCard({ dayKey, dayLabel, slots, mealType, isLocked, r
       </div>
       <div className="divide-y divide-warm-line">
         {showLunch  && (
-          <SlotRow slot="lunch"  dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} />
+          <SlotRow slot="lunch"  dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} onView={onView} />
         )}
         {showDinner && (
-          <SlotRow slot="dinner" dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} />
+          <SlotRow slot="dinner" dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} onView={onView} />
         )}
       </div>
     </div>
   )
 }
 
-function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot }) {
+function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot, onView }) {
   const recipeId  = slots[slot]
   const skipped   = slots[slot === 'lunch' ? 'lunchSkipped' : 'dinnerSkipped']
   const recipe    = recipeId ? recipes.find(r => r.id === recipeId) : null
@@ -84,7 +84,10 @@ function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot }) {
   return (
     <div className="px-4 py-3">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
+        <button
+          onClick={() => onView?.(recipe.id)}
+          className="flex-1 min-w-0 text-left"
+        >
           <div className="flex items-center gap-1.5 mb-1">
             <span className="text-xs font-semibold text-warm-muted">{slotLabel}</span>
           </div>
@@ -95,7 +98,7 @@ function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot }) {
               {recipe.protein}
             </span>
           </div>
-        </div>
+        </button>
         {!isLocked && (
           <div className="flex items-center gap-1 shrink-0 mt-1">
             <button

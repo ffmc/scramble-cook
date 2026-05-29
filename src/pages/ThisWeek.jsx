@@ -4,6 +4,7 @@ import { generateWeek } from '../utils/generator'
 import WeekSetup from '../components/WeekSetup'
 import DayCard from '../components/DayCard'
 import SwapPicker from '../components/SwapPicker'
+import RecipeDetail from '../components/RecipeDetail'
 import allRecipes from '../data/recipes.json'
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
@@ -16,13 +17,15 @@ export default function ThisWeek() {
   const currentWeek        = useStore(s => s.currentWeek)
   const weekHistory        = useStore(s => s.weekHistory)
   const favourites         = useStore(s => s.favourites)
+  const toggleFavourite    = useStore(s => s.toggleFavourite)
   const setWeekSlots       = useStore(s => s.setWeekSlots)
   const setSlot            = useStore(s => s.setSlot)
   const lockWeek           = useStore(s => s.lockWeek)
   const unlockWeek         = useStore(s => s.unlockWeek)
   const startNewWeek       = useStore(s => s.startNewWeek)
 
-  const [swapContext, setSwapContext]   = useState(null)
+  const [swapContext, setSwapContext]       = useState(null)
+  const [detailRecipe, setDetailRecipe]     = useState(null)
   const [locking, setLocking]          = useState(false)
   const [confirmNewWeek, setConfirmNewWeek] = useState(false)
 
@@ -141,9 +144,18 @@ export default function ThisWeek() {
             isLocked={isLocked}
             recipes={allRecipes}
             onSwap={(d, slot) => setSwapContext({ day: d, slot })}
+            onView={(id) => setDetailRecipe(allRecipes.find(r => r.id === id) ?? null)}
           />
         ))}
       </div>
+
+      <RecipeDetail
+        recipe={detailRecipe}
+        isOpen={!!detailRecipe}
+        onClose={() => setDetailRecipe(null)}
+        isFavourite={!!detailRecipe && favourites.includes(detailRecipe.id)}
+        onToggleFavourite={toggleFavourite}
+      />
 
       <SwapPicker
         isOpen={!!swapContext}

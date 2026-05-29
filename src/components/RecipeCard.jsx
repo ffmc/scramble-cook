@@ -13,8 +13,8 @@ export default function RecipeCard({ recipe, isFavourite, onClick, onToggleFavou
       className="bg-white rounded-2xl shadow-card p-4 cursor-pointer hover:shadow-md active:scale-[0.98] transition-all duration-150"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <span className="text-xs text-warm-gray font-medium">{recipe.cuisine}</span>
-        <div className="flex items-center gap-1.5">
+        <span className="text-xs text-warm-gray font-medium truncate">{recipe.cuisine}</span>
+        <div className="flex items-center gap-1.5 shrink-0">
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${difficultyClass}`}>
             {recipe.difficulty}
           </span>
