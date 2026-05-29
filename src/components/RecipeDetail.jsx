@@ -54,10 +54,12 @@ export default function RecipeDetail({ recipe, isOpen, onClose, isFavourite, onT
             </button>
             <button
               onClick={handleClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-cream-200 text-warm-gray
-                         hover:bg-cream-300 transition-colors text-lg leading-none"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-warm-line text-warm-gray
+                         hover:bg-cream-300 transition-colors"
             >
-              ×
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
@@ -90,7 +92,7 @@ export default function RecipeDetail({ recipe, isOpen, onClose, isFavourite, onT
               className="w-8 h-8 rounded-full border border-warm-line flex items-center justify-center
                          text-warm-gray hover:border-terra-300 hover:text-terra-400 transition-colors"
             >
-              −
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M5 12h14"/></svg>
             </button>
             <span className="w-6 text-center font-bold text-terra-500">{servings}</span>
             <button
@@ -98,7 +100,7 @@ export default function RecipeDetail({ recipe, isOpen, onClose, isFavourite, onT
               className="w-8 h-8 rounded-full border border-warm-line flex items-center justify-center
                          text-warm-gray hover:border-terra-300 hover:text-terra-400 transition-colors"
             >
-              +
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M12 5v14M5 12h14"/></svg>
             </button>
           </div>
         </div>

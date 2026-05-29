@@ -40,7 +40,7 @@ export default function WeekSetup() {
           className="w-7 h-7 rounded-full border border-warm-line flex items-center justify-center text-warm-gray
                      hover:border-terra-300 hover:text-terra-400 transition-colors duration-150 disabled:opacity-40"
         >
-          −
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M5 12h14"/></svg>
         </button>
         <span className="w-5 text-center text-sm font-bold text-terra-500">{servings}</span>
         <button
@@ -49,7 +49,7 @@ export default function WeekSetup() {
           className="w-7 h-7 rounded-full border border-warm-line flex items-center justify-center text-warm-gray
                      hover:border-terra-300 hover:text-terra-400 transition-colors duration-150 disabled:opacity-40"
         >
-          +
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
     </div>
