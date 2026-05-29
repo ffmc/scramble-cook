@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Typography ─────────────────────────────────── */
+  --font-family-sans: "Plus Jakarta Sans", sans-serif;
+  --font-family-display: "Playfair Display", serif;
+
+  /* ── Colour palette ──────────────────────────────── */
+  --color-cream-50:  #f5f2ec;
+  --color-cream-100: #ede8df;
+  --color-cream-200: #ddd6cb;
+  --color-cream-300: #ccc3b5;
+
+  --color-tomato-400: #e8401a;
+  --color-tomato-500: #c43214;
+
+  --color-terra-100: #e8d5ee;
+  --color-terra-200: #c99fd8;
+  --color-terra-300: #a365bb;
+  --color-terra-400: #6b2d7a;
+  --color-terra-500: #4d1f58;
+
+  --color-sage-100: #fce8dc;
+  --color-sage-200: #f5c4a4;
+  --color-sage-300: #ef9e72;
+  --color-sage-400: #e86f2a;
+  --color-sage-500: #c45520;
+
+  --color-warm-gray:  #6e6860;
+  --color-warm-muted: #a89e96;
+  --color-warm-line:  #ddd6cb;
+
+  /* ── Shadows ─────────────────────────────────────── */
+  --shadow-card:  0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(60, 20, 70, 0.10);
+  --shadow-sheet: 0 -4px 24px rgba(60, 20, 70, 0.16);
+
+  /* ── Border radius ───────────────────────────────── */
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  background-color: var(--color-cream-100);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
