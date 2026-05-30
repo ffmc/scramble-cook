@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { useStore } from '../context/AppContext'
 import { buildShoppingList, buildShoppingListByDay, buildCopyText } from '../utils/shoppingList'
 import ShoppingItem from '../components/ShoppingItem'
-import allRecipes from '../data/recipes.json'
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const DAY_SHORT = {
@@ -16,6 +15,7 @@ export default function ShoppingList() {
   const servings            = useStore(s => s.currentWeek.servings)
   const shoppingListChecked = useStore(s => s.shoppingListChecked)
   const toggleShoppingItem  = useStore(s => s.toggleShoppingItem)
+  const allRecipes          = useStore(s => s.recipes)
 
   const weekRecipeIds = useMemo(() => {
     const ids = new Set()
@@ -28,7 +28,7 @@ export default function ShoppingList() {
 
   const weekRecipes = useMemo(
     () => allRecipes.filter(r => weekRecipeIds.has(r.id)).sort((a, b) => a.name.localeCompare(b.name)),
-    [weekRecipeIds]
+    [weekRecipeIds, allRecipes]
   )
 
   const [copied,       setCopied]       = useState(false)
@@ -79,12 +79,12 @@ export default function ShoppingList() {
 
   const groups = useMemo(
     () => buildShoppingList(filteredSlots, allRecipes, servings),
-    [filteredSlots, servings]
+    [filteredSlots, servings, allRecipes]
   )
 
   const dayGroups = useMemo(
     () => buildShoppingListByDay(filteredSlots, allRecipes, servings),
-    [filteredSlots, servings]
+    [filteredSlots, servings, allRecipes]
   )
 
   const totalItems   = sortMode === 'day'

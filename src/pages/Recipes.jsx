@@ -2,11 +2,8 @@ import { useState, useMemo } from 'react'
 import { useStore } from '../context/AppContext'
 import RecipeCard from '../components/RecipeCard'
 import RecipeDetail from '../components/RecipeDetail'
-import allRecipes from '../data/recipes.json'
+import ImportRecipe from '../components/ImportRecipe'
 
-const CUISINES    = [...new Set(allRecipes.map(r => r.cuisine))].sort()
-const PROTEINS    = [...new Set(allRecipes.map(r => r.protein))].sort()
-const ALL_TAGS    = [...new Set(allRecipes.flatMap(r => r.tags))].sort()
 const PREP_RANGES = [
   { label: 'Under 20m', max: 20 },
   { label: '20–30m',    min: 20, max: 30 },
@@ -18,11 +15,17 @@ const EMPTY_FILTERS = { cuisine: '', protein: '', mealType: '', prepRange: '', t
 export default function Recipes() {
   const favourites        = useStore(s => s.favourites)
   const toggleFavourite   = useStore(s => s.toggleFavourite)
+  const allRecipes        = useStore(s => s.recipes)
 
   const [search,      setSearch]      = useState('')
   const [filters,     setFilters]     = useState(EMPTY_FILTERS)
   const [selectedId,  setSelectedId]  = useState(null)
   const [showFilters, setShowFilters] = useState(false)
+  const [showImport,  setShowImport]  = useState(false)
+
+  const CUISINES = useMemo(() => [...new Set(allRecipes.map(r => r.cuisine))].sort(), [allRecipes])
+  const PROTEINS = useMemo(() => [...new Set(allRecipes.map(r => r.protein))].sort(), [allRecipes])
+  const ALL_TAGS = useMemo(() => [...new Set(allRecipes.flatMap(r => r.tags))].sort(), [allRecipes])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
@@ -42,7 +45,7 @@ export default function Recipes() {
       }
       return true
     })
-  }, [search, filters])
+  }, [search, filters, allRecipes])
 
   const selectedRecipe = selectedId ? allRecipes.find(r => r.id === selectedId) : null
 
@@ -60,8 +63,14 @@ export default function Recipes() {
 
   return (
     <div>
-      <header className="px-4 pt-5 pb-3">
+      <header className="px-4 pt-5 pb-3 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-terra-500 tracking-tight">Recipes</h1>
+        <button
+          onClick={() => setShowImport(true)}
+          className="px-3 py-2 rounded-xl bg-terra-400 text-white text-sm font-semibold hover:bg-terra-500 transition-colors"
+        >
+          + Import
+        </button>
       </header>
 
       {/* Search bar */}
@@ -169,6 +178,8 @@ export default function Recipes() {
         isFavourite={selectedRecipe ? favourites.includes(selectedRecipe.id) : false}
         onToggleFavourite={toggleFavourite}
       />
+
+      <ImportRecipe isOpen={showImport} onClose={() => setShowImport(false)} />
     </div>
   )
 }

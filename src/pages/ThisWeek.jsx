@@ -5,7 +5,6 @@ import WeekSetup from '../components/WeekSetup'
 import DayCard from '../components/DayCard'
 import SwapPicker from '../components/SwapPicker'
 import RecipeDetail from '../components/RecipeDetail'
-import allRecipes from '../data/recipes.json'
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const DAY_LABELS = {
@@ -17,6 +16,7 @@ export default function ThisWeek() {
   const currentWeek        = useStore(s => s.currentWeek)
   const weekHistory        = useStore(s => s.weekHistory)
   const favourites         = useStore(s => s.favourites)
+  const recipes            = useStore(s => s.recipes)
   const toggleFavourite    = useStore(s => s.toggleFavourite)
   const setWeekSlots       = useStore(s => s.setWeekSlots)
   const setSlot            = useStore(s => s.setSlot)
@@ -39,7 +39,7 @@ export default function ThisWeek() {
   const hasFilledSlot = DAYS.some(d => slots[d].lunch || slots[d].dinner)
 
   const handleScramble = () => {
-    const newSlots = generateWeek({ mealType, weekHistory, favourites })
+    const newSlots = generateWeek({ mealType, weekHistory, favourites, recipes })
     setWeekSlots(newSlots)
   }
 
@@ -142,9 +142,9 @@ export default function ThisWeek() {
             slots={slots[day]}
             mealType={mealType}
             isLocked={isLocked}
-            recipes={allRecipes}
+            recipes={recipes}
             onSwap={(d, slot) => setSwapContext({ day: d, slot })}
-            onView={(id) => setDetailRecipe(allRecipes.find(r => r.id === id) ?? null)}
+            onView={(id) => setDetailRecipe(recipes.find(r => r.id === id) ?? null)}
           />
         ))}
       </div>
@@ -162,7 +162,7 @@ export default function ThisWeek() {
         onClose={() => setSwapContext(null)}
         day={swapContext?.day}
         slot={swapContext?.slot}
-        recipes={allRecipes}
+        recipes={recipes}
         onSelect={setSlot}
       />
     </div>

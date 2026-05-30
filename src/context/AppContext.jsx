@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
@@ -16,8 +15,10 @@ const emptyWeek = () => ({
 })
 
 export const useStore = create(
-  persist(
     (set, get) => ({
+      hydrated: false,
+      recipes: [],
+
       currentWeek: emptyWeek(),
 
       setMealType: (mealType) =>
@@ -98,7 +99,5 @@ export const useStore = create(
             [key]: !s.shoppingListChecked[key],
           },
         })),
-    }),
-    { name: 'scramble-cook-store' }
-  )
+    })
 )

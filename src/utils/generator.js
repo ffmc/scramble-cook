@@ -1,8 +1,6 @@
-import recipes from '../data/recipes.json'
-
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
-export function generateWeek({ mealType, weekHistory, favourites }) {
+export function generateWeek({ mealType, weekHistory, favourites, recipes }) {
   const previousIds =
     weekHistory.length > 0
       ? Object.values(weekHistory[0].slots)
@@ -23,7 +21,7 @@ export function generateWeek({ mealType, weekHistory, favourites }) {
       .filter(Boolean)
 
     if (mealType === 'lunch' || mealType === 'both') {
-      slots[day].lunch = pickRecipe({ targetMeal: 'lunch', previousIds, usedThisWeek, prevProtein, favourites })
+      slots[day].lunch = pickRecipe({ targetMeal: 'lunch', previousIds, usedThisWeek, prevProtein, favourites, recipes })
     }
 
     if (mealType === 'dinner' || mealType === 'both') {
@@ -36,6 +34,7 @@ export function generateWeek({ mealType, weekHistory, favourites }) {
         prevProtein,
         sameDayProtein: lunchProtein,
         favourites,
+        recipes,
       })
     }
 
@@ -47,7 +46,7 @@ export function generateWeek({ mealType, weekHistory, favourites }) {
   return slots
 }
 
-function pickRecipe({ targetMeal, previousIds, usedThisWeek, prevProtein, sameDayProtein, favourites }) {
+function pickRecipe({ targetMeal, previousIds, usedThisWeek, prevProtein, sameDayProtein, favourites, recipes }) {
   const pool = recipes.filter(
     r =>
       r.mealType.includes(targetMeal) &&

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../context/AppContext'
-import allRecipes from '../data/recipes.json'
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const DAY_LABELS = {
@@ -17,15 +16,14 @@ function weekRange(lockedAt) {
   return `${fmt(start)} – ${fmt(end)}`
 }
 
-function recipeName(id) {
-  return allRecipes.find(r => r.id === id)?.name ?? '—'
-}
-
 export default function History() {
   const weekHistory    = useStore(s => s.weekHistory)
   const loadHistoryWeek = useStore(s => s.loadHistoryWeek)
+  const allRecipes      = useStore(s => s.recipes)
   const navigate        = useNavigate()
   const [expanded, setExpanded] = useState({})
+
+  const recipeName = (id) => allRecipes.find(r => r.id === id)?.name ?? '—'
 
   const toggle = (i) => setExpanded(e => ({ ...e, [i]: !e[i] }))
 
