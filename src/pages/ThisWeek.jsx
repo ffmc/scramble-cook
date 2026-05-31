@@ -26,13 +26,25 @@ export default function ThisWeek() {
   const startNewWeek       = useStore(s => s.startNewWeek)
   const swapDaySlots       = useStore(s => s.swapDaySlots)
 
-  const [swapContext, setSwapContext]       = useState(null)
-  const [detailRecipe, setDetailRecipe]     = useState(null)
-  const [locking, setLocking]              = useState(false)
-  const [confirmNewWeek, setConfirmNewWeek] = useState(false)
-  const [collapsedDays, setCollapsedDays]  = useState(new Set())
+  const [swapContext, setSwapContext]         = useState(null)
+  const [detailRecipe, setDetailRecipe]       = useState(null)
+  const [locking, setLocking]                = useState(false)
+  const [confirmNewWeek, setConfirmNewWeek]   = useState(false)
+  const [collapsedDays, setCollapsedDays]    = useState(new Set())
+  const [excludedProteins, setExcludedProteins] = useState([])
 
   const { slots, isLocked, mealType, servings, activeDays = DAYS } = currentWeek
+
+  const allProteins = [...new Set(recipes.map(r => r.protein))].sort()
+
+  const previousWeekIds = weekHistory.length > 0
+    ? Object.values(weekHistory[0].slots).flatMap(s => [s.lunch, s.dinner]).filter(Boolean)
+    : []
+
+  const toggleExcludedProtein = (protein) =>
+    setExcludedProteins(prev =>
+      prev.includes(protein) ? prev.filter(p => p !== protein) : [...prev, protein]
+    )
 
   const toggleCollapse = (day) =>
     setCollapsedDays(prev => {
@@ -67,7 +79,7 @@ export default function ThisWeek() {
   const hasFilledSlot = DAYS.some(d => slots[d].lunch || slots[d].dinner)
 
   const handleScramble = () => {
-    const newSlots = generateWeek({ mealType, weekHistory, favourites, recipes, activeDays })
+    const newSlots = generateWeek({ mealType, weekHistory, favourites, recipes, activeDays, excludedProteins })
     setWeekSlots(newSlots)
   }
 
@@ -82,6 +94,7 @@ export default function ThisWeek() {
   const handleNewWeek = () => {
     startNewWeek()
     setConfirmNewWeek(false)
+    setExcludedProteins([])
   }
 
   return (
@@ -107,13 +120,35 @@ export default function ThisWeek() {
       <div className="px-4 py-4 flex flex-col gap-3">
         {/* Action buttons */}
         {!isLocked && (
-          <button
-            onClick={handleScramble}
-            className="w-full py-3.5 rounded-2xl bg-tomato-500 text-white font-bold text-base
-                       hover:bg-tomato-600 active:scale-95 transition-all duration-150 shadow-card"
-          >
-            🎲 Scramble the Week
-          </button>
+          <>
+            <button
+              onClick={handleScramble}
+              className="w-full py-3.5 rounded-2xl bg-tomato-500 text-white font-bold text-base
+                         hover:bg-tomato-600 active:scale-95 transition-all duration-150 shadow-card"
+            >
+              🎲 Scramble the Week
+            </button>
+            {allProteins.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-warm-muted shrink-0">Exclude:</span>
+                {allProteins.map(protein => {
+                  const excluded = excludedProteins.includes(protein)
+                  return (
+                    <button
+                      key={protein}
+                      onClick={() => toggleExcludedProtein(protein)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors capitalize
+                        ${excluded
+                          ? 'bg-warm-line border-warm-line text-warm-muted line-through'
+                          : 'border-warm-line text-warm-gray hover:border-terra-300'}`}
+                    >
+                      {protein}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </>
         )}
 
         {!isLocked && hasFilledSlot && (
@@ -206,6 +241,7 @@ export default function ThisWeek() {
         onSelect={setSlot}
         currentRecipeId={swapContext?.recipeId}
         usedRecipeIds={Object.values(slots).flatMap(s => [s.lunch, s.dinner]).filter(Boolean)}
+        previousWeekIds={previousWeekIds}
       />
     </div>
   )

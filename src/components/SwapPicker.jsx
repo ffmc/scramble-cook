@@ -8,12 +8,13 @@ const SORT_OPTIONS = [
   { key: 'fav',  label: '★ First' },
 ]
 
-export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSelect, currentRecipeId, usedRecipeIds = [] }) {
-  const [search,  setSearch]  = useState('')
-  const [favOnly, setFavOnly] = useState(false)
-  const [cuisine, setCuisine] = useState('')
-  const [protein, setProtein] = useState('')
-  const [sort,    setSort]    = useState('az')
+export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSelect, currentRecipeId, usedRecipeIds = [], previousWeekIds = [] }) {
+  const [search,       setSearch]       = useState('')
+  const [favOnly,      setFavOnly]      = useState(false)
+  const [cuisine,      setCuisine]      = useState('')
+  const [protein,      setProtein]      = useState('')
+  const [sort,         setSort]         = useState('az')
+  const [hideLastWeek, setHideLastWeek] = useState(false)
   const favourites = useStore(s => s.favourites)
 
   const slotRecipes = useMemo(() =>
@@ -31,6 +32,7 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
       if (favOnly && !favourites.includes(r.id)) return false
       if (cuisine && r.cuisine !== cuisine) return false
       if (protein && r.protein !== protein) return false
+      if (hideLastWeek && previousWeekIds.includes(r.id)) return false
       return true
     })
     if (sort === 'az')   list = [...list].sort((a, b) => a.name.localeCompare(b.name))
@@ -40,7 +42,7 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
       (favourites.includes(a.id) ? 0 : 1) - (favourites.includes(b.id) ? 0 : 1)
     )
     return list
-  }, [slotRecipes, search, favOnly, cuisine, protein, sort, favourites])
+  }, [slotRecipes, search, favOnly, cuisine, protein, sort, favourites, hideLastWeek, previousWeekIds])
 
   const currentRecipe = currentRecipeId ? recipes.find(r => r.id === currentRecipeId) : null
 
@@ -55,6 +57,7 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
     setCuisine('')
     setProtein('')
     setSort('az')
+    setHideLastWeek(false)
     onClose()
   }
 
@@ -119,6 +122,15 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
           >
             ★ Favourites
           </button>
+          {previousWeekIds.length > 0 && (
+            <button
+              onClick={() => setHideLastWeek(v => !v)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors
+                ${hideLastWeek ? 'bg-terra-400 border-terra-400 text-white' : 'border-warm-line text-warm-gray hover:border-terra-300'}`}
+            >
+              Hide last week
+            </button>
+          )}
           {cuisines.map(c => (
             <button
               key={c}
@@ -168,6 +180,7 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
             {filtered.map(recipe => {
               const isCurrent = recipe.id === currentRecipeId
               const isUsed = !isCurrent && usedRecipeIds.includes(recipe.id)
+              const isLastWeek = previousWeekIds.includes(recipe.id)
               const isFav = favourites.includes(recipe.id)
               return (
                 <li key={recipe.id}>
@@ -182,6 +195,7 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="text-sm font-semibold text-gray-800 leading-snug">{recipe.name}</p>
                         {isCurrent && <span className="text-xs text-warm-muted">(current)</span>}
+                        {isLastWeek && !isCurrent && <span className="text-xs text-warm-muted">(last week)</span>}
                       </div>
                       <p className="text-xs text-warm-gray mt-0.5 capitalize">
                         {recipe.cuisine} · {recipe.protein} · {recipe.prepTime + recipe.cookTime}m
