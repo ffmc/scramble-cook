@@ -11,7 +11,19 @@ const PREP_RANGES = [
   { label: '30–45m',    min: 30, max: 45 },
 ]
 
-const EMPTY_FILTERS = { cuisine: '', protein: '', mealType: '', prepRange: '', tags: [] }
+const KCAL_RANGES = [
+  { label: 'Under 400',  max: 400 },
+  { label: '400–600',    min: 400, max: 600 },
+  { label: '600+',       min: 600 },
+]
+
+const SORT_OPTIONS = [
+  { key: 'az',   label: 'A–Z' },
+  { key: 'time', label: 'Time ↑' },
+  { key: 'kcal', label: 'Kcal ↑' },
+]
+
+const EMPTY_FILTERS = { cuisine: '', protein: '', mealType: '', prepRange: '', kcalRange: '', tags: [] }
 
 export default function Recipes() {
   const favourites        = useStore(s => s.favourites)
@@ -20,6 +32,7 @@ export default function Recipes() {
 
   const [search,      setSearch]      = useState('')
   const [filters,     setFilters]     = useState(EMPTY_FILTERS)
+  const [sort,        setSort]        = useState('az')
   const [selectedId,  setSelectedId]  = useState(null)
   const [showFilters, setShowFilters] = useState(false)
   const [showImport,  setShowImport]  = useState(false)
@@ -30,7 +43,7 @@ export default function Recipes() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
-    return allRecipes.filter(r => {
+    let list = allRecipes.filter(r => {
       if (q && !r.name.toLowerCase().includes(q)) return false
       if (filters.cuisine  && r.cuisine !== filters.cuisine)           return false
       if (filters.protein  && r.protein !== filters.protein)           return false
@@ -40,13 +53,25 @@ export default function Recipes() {
         const range = PREP_RANGES.find(p => p.label === filters.prepRange)
         const total = r.prepTime + r.cookTime
         if (range) {
-          if (range.max  !== undefined && total >= range.max) return false
-          if (range.min  !== undefined && total < range.min)  return false
+          if (range.max !== undefined && total >= range.max) return false
+          if (range.min !== undefined && total < range.min)  return false
+        }
+      }
+      if (filters.kcalRange) {
+        const range = KCAL_RANGES.find(p => p.label === filters.kcalRange)
+        const kcal = r.nutrition?.calories ?? 0
+        if (range) {
+          if (range.max !== undefined && kcal >= range.max) return false
+          if (range.min !== undefined && kcal < range.min)  return false
         }
       }
       return true
     })
-  }, [search, filters, allRecipes])
+    if (sort === 'az')   list = [...list].sort((a, b) => a.name.localeCompare(b.name))
+    if (sort === 'time') list = [...list].sort((a, b) => (a.prepTime + a.cookTime) - (b.prepTime + b.cookTime))
+    if (sort === 'kcal') list = [...list].sort((a, b) => (a.nutrition?.calories ?? 0) - (b.nutrition?.calories ?? 0))
+    return list
+  }, [search, filters, sort, allRecipes])
 
   const selectedRecipe = selectedId ? allRecipes.find(r => r.id === selectedId) : null
 
@@ -60,7 +85,8 @@ export default function Recipes() {
 
   const activeFilterCount =
     (filters.cuisine ? 1 : 0) + (filters.protein ? 1 : 0) +
-    (filters.mealType ? 1 : 0) + (filters.prepRange ? 1 : 0) + filters.tags.length
+    (filters.mealType ? 1 : 0) + (filters.prepRange ? 1 : 0) +
+    (filters.kcalRange ? 1 : 0) + filters.tags.length
 
   return (
     <div>
@@ -74,7 +100,7 @@ export default function Recipes() {
         </button>
       </header>
 
-      {/* Search bar */}
+      {/* Search + filter bar */}
       <div className="px-4 pb-3 flex gap-2">
         <div className="relative flex-1">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-muted" />
@@ -102,32 +128,19 @@ export default function Recipes() {
       {showFilters && (
         <div className="mx-4 mb-3 p-4 bg-white rounded-2xl shadow-card space-y-3">
           <FilterRow label="Cuisine">
-            <PillSelect
-              options={CUISINES}
-              value={filters.cuisine}
-              onChange={v => setFilter('cuisine', v)}
-            />
+            <PillSelect options={CUISINES} value={filters.cuisine} onChange={v => setFilter('cuisine', v)} />
           </FilterRow>
           <FilterRow label="Protein">
-            <PillSelect
-              options={PROTEINS}
-              value={filters.protein}
-              onChange={v => setFilter('protein', v)}
-            />
+            <PillSelect options={PROTEINS} value={filters.protein} onChange={v => setFilter('protein', v)} />
           </FilterRow>
           <FilterRow label="Meal">
-            <PillSelect
-              options={['lunch', 'dinner']}
-              value={filters.mealType}
-              onChange={v => setFilter('mealType', v)}
-            />
+            <PillSelect options={['lunch', 'dinner']} value={filters.mealType} onChange={v => setFilter('mealType', v)} />
           </FilterRow>
           <FilterRow label="Time">
-            <PillSelect
-              options={PREP_RANGES.map(p => p.label)}
-              value={filters.prepRange}
-              onChange={v => setFilter('prepRange', v)}
-            />
+            <PillSelect options={PREP_RANGES.map(p => p.label)} value={filters.prepRange} onChange={v => setFilter('prepRange', v)} />
+          </FilterRow>
+          <FilterRow label="Calories">
+            <PillSelect options={KCAL_RANGES.map(p => p.label)} value={filters.kcalRange} onChange={v => setFilter('kcalRange', v)} />
           </FilterRow>
           <FilterRow label="Tags">
             <div className="flex flex-wrap gap-1.5">
@@ -156,6 +169,23 @@ export default function Recipes() {
         </div>
       )}
 
+      {/* Sort + count bar */}
+      <div className="px-4 pb-2 flex items-center justify-between">
+        <span className="text-xs text-warm-muted">{filtered.length} recipes</span>
+        <div className="flex items-center gap-1">
+          {SORT_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              onClick={() => setSort(opt.key)}
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors
+                ${sort === opt.key ? 'bg-terra-400 text-white' : 'text-warm-gray hover:text-terra-400'}`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Recipe grid */}
       <div className="px-4 pb-4 grid grid-cols-1 gap-3">
         {filtered.map(recipe => (
@@ -168,7 +198,7 @@ export default function Recipes() {
           />
         ))}
         {filtered.length === 0 && (
-          <p className="col-span-2 text-center text-sm text-warm-muted py-12">No recipes match your filters</p>
+          <p className="text-center text-sm text-warm-muted py-12">No recipes match your filters</p>
         )}
       </div>
 

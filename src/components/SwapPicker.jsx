@@ -4,6 +4,7 @@ import { useStore } from '../context/AppContext'
 const SORT_OPTIONS = [
   { key: 'az',   label: 'A–Z' },
   { key: 'time', label: 'Time ↑' },
+  { key: 'kcal', label: 'Kcal ↑' },
   { key: 'fav',  label: '★ First' },
 ]
 
@@ -34,6 +35,7 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
     })
     if (sort === 'az')   list = [...list].sort((a, b) => a.name.localeCompare(b.name))
     if (sort === 'time') list = [...list].sort((a, b) => (a.prepTime + a.cookTime) - (b.prepTime + b.cookTime))
+    if (sort === 'kcal') list = [...list].sort((a, b) => (a.nutrition?.calories ?? 0) - (b.nutrition?.calories ?? 0))
     if (sort === 'fav')  list = [...list].sort((a, b) =>
       (favourites.includes(a.id) ? 0 : 1) - (favourites.includes(b.id) ? 0 : 1)
     )
@@ -170,6 +172,7 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
                       </div>
                       <p className="text-xs text-warm-gray mt-0.5 capitalize">
                         {recipe.cuisine} · {recipe.protein} · {recipe.prepTime + recipe.cookTime}m
+                        {recipe.nutrition?.calories ? ` · ${recipe.nutrition.calories} kcal` : ''}
                       </p>
                     </div>
                     {isFav && <StarIcon className="w-4 h-4 text-amber-400 shrink-0" />}

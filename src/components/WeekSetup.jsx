@@ -39,7 +39,7 @@ export default function WeekSetup() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-warm-gray font-medium">Servings</span>
+          <PersonIcon className="w-4 h-4 text-warm-muted shrink-0" />
           <button
             onClick={() => !isLocked && setServings(Math.max(1, servings - 1))}
             disabled={isLocked || servings <= 1}
@@ -78,5 +78,14 @@ export default function WeekSetup() {
         ))}
       </div>
     </div>
+  )
+}
+
+function PersonIcon({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
   )
 }

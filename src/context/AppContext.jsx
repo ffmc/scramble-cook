@@ -44,7 +44,8 @@ export const useStore = create(
 
       toggleActiveDay: (day) =>
         set(s => {
-          const { activeDays, slots } = s.currentWeek
+          const activeDays = s.currentWeek.activeDays ?? DAYS
+          const { slots } = s.currentWeek
           const removing = activeDays.includes(day)
           return {
             currentWeek: {
