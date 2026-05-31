@@ -135,10 +135,10 @@ export default function ThisWeek() {
             <div className="rounded-2xl border border-warm-line overflow-hidden">
               <button
                 onClick={() => setFiltersOpen(v => !v)}
-                className="w-full flex items-center justify-between px-4 py-2.5 bg-white text-left"
+                className="w-full flex items-center justify-between px-4 py-3.5 bg-white text-left"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-warm-gray">Scramble filters</span>
+                  <span className="text-xs font-semibold text-warm-gray">Exclude Proteins</span>
                   {(excludedProteins.length > 0 || !excludePreviousWeek) && (
                     <span className="text-xs px-1.5 py-0.5 rounded-full bg-terra-400 text-white font-bold leading-none">
                       {excludedProteins.length + (!excludePreviousWeek ? 1 : 0)}
