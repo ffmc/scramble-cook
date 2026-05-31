@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useStore } from '../context/AppContext'
 
 const SORT_OPTIONS = [
@@ -57,6 +57,17 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
     setSort('az')
     onClose()
   }
+
+  useEffect(() => {
+    if (!isOpen) return
+    window.history.pushState({ swapPicker: true }, '')
+    const handlePopState = () => handleClose()
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      if (window.history.state?.swapPicker) window.history.back()
+    }
+  }, [isOpen])
 
   return (
     <div
@@ -161,10 +172,11 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
               return (
                 <li key={recipe.id}>
                   <button
-                    onClick={() => !isCurrent && !isUsed && handleSelect(recipe.id)}
-                    disabled={isCurrent || isUsed}
+                    onClick={() => !isCurrent && handleSelect(recipe.id)}
+                    disabled={isCurrent}
                     className={`w-full flex items-center gap-3 py-3.5 text-left transition-colors rounded-xl
-                      ${isCurrent || isUsed ? 'opacity-40 cursor-default' : 'hover:bg-cream-100 -mx-2 px-2'}`}
+                      ${isCurrent ? 'opacity-40 cursor-default' : 'hover:bg-cream-100 -mx-2 px-2'}
+                      ${isUsed ? 'opacity-40' : ''}`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
