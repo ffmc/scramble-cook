@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore } from '../context/AppContext'
 import { generateWeek } from '../utils/generator'
 import WeekSetup from '../components/WeekSetup'
@@ -24,13 +24,29 @@ export default function ThisWeek() {
   const lockWeek           = useStore(s => s.lockWeek)
   const unlockWeek         = useStore(s => s.unlockWeek)
   const startNewWeek       = useStore(s => s.startNewWeek)
+  const swapDaySlots       = useStore(s => s.swapDaySlots)
 
   const [swapContext, setSwapContext]       = useState(null)
   const [detailRecipe, setDetailRecipe]     = useState(null)
-  const [locking, setLocking]          = useState(false)
+  const [locking, setLocking]              = useState(false)
   const [confirmNewWeek, setConfirmNewWeek] = useState(false)
+  const [collapsedDays, setCollapsedDays]  = useState(new Set())
 
   const { slots, isLocked, mealType, servings } = currentWeek
+
+  const toggleCollapse = (day) =>
+    setCollapsedDays(prev => {
+      const next = new Set(prev)
+      next.has(day) ? next.delete(day) : next.add(day)
+      return next
+    })
+
+  useEffect(() => {
+    if (!isLocked) return
+    const todayIdx = (new Date().getDay() + 6) % 7 // Mon=0 … Sun=6
+    const pastDays = DAYS.slice(0, todayIdx)
+    setCollapsedDays(prev => new Set([...prev, ...pastDays]))
+  }, [isLocked])
 
   const householdCode = getStoredHousehold()?.code
 
@@ -89,8 +105,8 @@ export default function ThisWeek() {
         {!isLocked && (
           <button
             onClick={handleScramble}
-            className="w-full py-3.5 rounded-2xl bg-tomato-400 text-white font-bold text-base
-                       hover:bg-tomato-500 active:scale-95 transition-all duration-150 shadow-card"
+            className="w-full py-3.5 rounded-2xl bg-tomato-500 text-white font-bold text-base
+                       hover:bg-tomato-600 active:scale-95 transition-all duration-150 shadow-card"
           >
             🎲 Scramble the Week
           </button>
@@ -119,8 +135,8 @@ export default function ThisWeek() {
             </button>
             <button
               onClick={() => setConfirmNewWeek(true)}
-              className="flex-1 py-3 rounded-2xl font-bold text-sm bg-sage-400 text-white
-                         hover:bg-sage-500 transition-colors"
+              className="flex-1 py-3 rounded-2xl font-bold text-sm bg-tomato-500 text-white
+                         hover:bg-tomato-600 transition-colors"
             >
               ✨ New Week
             </button>
@@ -162,6 +178,9 @@ export default function ThisWeek() {
             recipes={recipes}
             onSwap={(d, slot, recipeId) => setSwapContext({ day: d, slot, recipeId })}
             onView={(id) => setDetailRecipe(recipes.find(r => r.id === id) ?? null)}
+            isCollapsed={collapsedDays.has(day)}
+            onToggleCollapse={() => toggleCollapse(day)}
+            onSwapSlots={swapDaySlots}
           />
         ))}
       </div>

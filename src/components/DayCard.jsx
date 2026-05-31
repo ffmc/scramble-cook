@@ -14,24 +14,49 @@ const PROTEIN_COLOURS = {
 
 const PROTEIN_DEFAULT = 'bg-warm-line text-warm-gray'
 
-export default function DayCard({ dayKey, dayLabel, slots, mealType, isLocked, recipes, onSwap, onView }) {
+export default function DayCard({
+  dayKey, dayLabel, slots, mealType, isLocked, recipes,
+  onSwap, onView, isCollapsed, onToggleCollapse, onSwapSlots,
+}) {
   const showLunch  = mealType === 'lunch'  || mealType === 'both'
   const showDinner = mealType === 'dinner' || mealType === 'both'
+  const canSwapSlots = mealType === 'both' && !isLocked
   const skipSlot   = useStore(s => s.skipSlot)
 
   return (
     <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-      <div className="px-4 py-2 bg-cream-200 border-b border-warm-line">
+      <div className="px-4 py-2 bg-cream-200 border-b border-warm-line flex items-center justify-between">
         <span className="text-xs font-bold uppercase tracking-widest text-warm-gray">{dayLabel}</span>
+        <div className="flex items-center gap-1">
+          {canSwapSlots && (
+            <button
+              onClick={() => onSwapSlots(dayKey)}
+              className="p-1 rounded-lg text-warm-muted hover:text-terra-400 hover:bg-cream-300 transition-colors"
+              title="Swap lunch and dinner"
+            >
+              <SwapSlotsIcon />
+            </button>
+          )}
+          <button
+            onClick={onToggleCollapse}
+            className="p-1 rounded-lg text-warm-muted hover:text-terra-400 hover:bg-cream-300 transition-colors"
+            title={isCollapsed ? 'Expand day' : 'Collapse day'}
+          >
+            <ChevronIcon collapsed={isCollapsed} />
+          </button>
+        </div>
       </div>
-      <div className="divide-y divide-warm-line">
-        {showLunch  && (
-          <SlotRow slot="lunch"  dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} onView={onView} />
-        )}
-        {showDinner && (
-          <SlotRow slot="dinner" dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} onView={onView} />
-        )}
-      </div>
+
+      {!isCollapsed && (
+        <div className="divide-y divide-warm-line">
+          {showLunch  && (
+            <SlotRow slot="lunch"  dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} onView={onView} />
+          )}
+          {showDinner && (
+            <SlotRow slot="dinner" dayKey={dayKey} slots={slots} isLocked={isLocked} recipes={recipes} onSwap={onSwap} skipSlot={skipSlot} onView={onView} />
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -106,7 +131,7 @@ function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot, onV
               className="p-1.5 rounded-lg hover:bg-cream-200 text-warm-gray hover:text-terra-400 transition-colors"
               title="Swap recipe"
             >
-              <SwapIcon />
+              <RefreshIcon />
             </button>
             <button
               onClick={() => skipSlot(dayKey, slot)}
@@ -122,10 +147,30 @@ function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot, onV
   )
 }
 
-function SwapIcon() {
+function SwapSlotsIcon() {
   return (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4" />
+    </svg>
+  )
+}
+
+function RefreshIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path d="M23 4v6h-6" />
+      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+    </svg>
+  )
+}
+
+function ChevronIcon({ collapsed }) {
+  return (
+    <svg
+      className={`w-4 h-4 transition-transform duration-200 ${collapsed ? 'rotate-180' : ''}`}
+      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+    >
+      <path d="M18 15l-6-6-6 6" />
     </svg>
   )
 }

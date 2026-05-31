@@ -41,6 +41,25 @@ export const useStore = create(
           },
         })),
 
+      swapDaySlots: (day) =>
+        set(s => {
+          const d = s.currentWeek.slots[day]
+          return {
+            currentWeek: {
+              ...s.currentWeek,
+              slots: {
+                ...s.currentWeek.slots,
+                [day]: {
+                  lunch: d.dinner,
+                  dinner: d.lunch,
+                  lunchSkipped: d.dinnerSkipped,
+                  dinnerSkipped: d.lunchSkipped,
+                },
+              },
+            },
+          }
+        }),
+
       skipSlot: (day, slot, value = true) => {
         const skipKey = slot === 'lunch' ? 'lunchSkipped' : 'dinnerSkipped'
         set(s => ({
