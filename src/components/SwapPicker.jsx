@@ -8,7 +8,7 @@ const SORT_OPTIONS = [
   { key: 'fav',  label: '★ First' },
 ]
 
-export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSelect, currentRecipeId }) {
+export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSelect, currentRecipeId, usedRecipeIds = [] }) {
   const [search,  setSearch]  = useState('')
   const [favOnly, setFavOnly] = useState(false)
   const [cuisine, setCuisine] = useState('')
@@ -156,14 +156,15 @@ export default function SwapPicker({ isOpen, onClose, day, slot, recipes, onSele
           <ul className="divide-y divide-warm-line">
             {filtered.map(recipe => {
               const isCurrent = recipe.id === currentRecipeId
+              const isUsed = !isCurrent && usedRecipeIds.includes(recipe.id)
               const isFav = favourites.includes(recipe.id)
               return (
                 <li key={recipe.id}>
                   <button
-                    onClick={() => !isCurrent && handleSelect(recipe.id)}
-                    disabled={isCurrent}
+                    onClick={() => !isCurrent && !isUsed && handleSelect(recipe.id)}
+                    disabled={isCurrent || isUsed}
                     className={`w-full flex items-center gap-3 py-3.5 text-left transition-colors rounded-xl
-                      ${isCurrent ? 'opacity-40 cursor-default' : 'hover:bg-cream-100 -mx-2 px-2'}`}
+                      ${isCurrent || isUsed ? 'opacity-40 cursor-default' : 'hover:bg-cream-100 -mx-2 px-2'}`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">

@@ -31,12 +31,19 @@ export default function ShoppingList() {
     [weekRecipeIds, allRecipes]
   )
 
-  const [copied,       setCopied]       = useState(false)
-  const [filtersOpen,  setFiltersOpen]  = useState(false)
-  const [sortMode,     setSortMode]     = useState('category')
-  const [mealFilter,   setMealFilter]   = useState('both')
-  const [activeDays,   setActiveDays]   = useState(() => new Set(DAYS))
-  const [activeRecipes, setActiveRecipes] = useState(() => new Set(weekRecipeIds))
+  const [copied,          setCopied]          = useState(false)
+  const [filtersOpen,     setFiltersOpen]     = useState(false)
+  const [sortMode,        setSortMode]        = useState('category')
+  const [mealFilter,      setMealFilter]      = useState('both')
+  const [activeDays,      setActiveDays]      = useState(() => new Set(DAYS))
+  const [activeRecipes,   setActiveRecipes]   = useState(() => new Set(weekRecipeIds))
+  const [collapsedDays,   setCollapsedDays]   = useState(new Set())
+
+  const toggleDayCollapse = (day) => setCollapsedDays(prev => {
+    const next = new Set(prev)
+    next.has(day) ? next.delete(day) : next.add(day)
+    return next
+  })
 
   const toggleDay = (day) => setActiveDays(prev => {
     const next = new Set(prev)
@@ -257,10 +264,19 @@ export default function ShoppingList() {
           <>
             {dayGroups.map(({ day, label, meals }) => (
               <div key={day} className="bg-white rounded-2xl shadow-card overflow-hidden">
-                <div className="px-4 py-2.5 bg-cream-200 border-b border-warm-line">
+                <button
+                  onClick={() => toggleDayCollapse(day)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 bg-cream-200 border-b border-warm-line"
+                >
                   <span className="text-xs font-bold uppercase tracking-widest text-warm-gray">{label}</span>
-                </div>
-                {meals.map(meal => (
+                  <svg
+                    className={`w-4 h-4 text-warm-gray transition-transform duration-200 ${collapsedDays.has(day) ? 'rotate-180' : ''}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path d="M18 15l-6-6-6 6" />
+                  </svg>
+                </button>
+                {!collapsedDays.has(day) && meals.map(meal => (
                   <div key={meal.slot}>
                     <div className="px-4 pt-3 pb-1">
                       <span className="text-xs font-semibold text-warm-muted capitalize">{meal.slot} · {meal.recipeName}</span>

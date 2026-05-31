@@ -46,7 +46,8 @@ export default function ThisWeek() {
       setCollapsedDays(new Set())
       return
     }
-    const todayIdx = (new Date().getDay() + 6) % 7 // Mon=0 … Sun=6
+    const day = new Date().getDay()
+    const todayIdx = day === 0 ? 0 : (day + 6) % 7 // Mon=0 … Sun=6; Sun=0 means planning next week
     const pastDays = DAYS.slice(0, todayIdx)
     setCollapsedDays(prev => new Set([...prev, ...pastDays]))
   }, [isLocked])
@@ -204,6 +205,7 @@ export default function ThisWeek() {
         recipes={recipes}
         onSelect={setSlot}
         currentRecipeId={swapContext?.recipeId}
+        usedRecipeIds={Object.values(slots).flatMap(s => [s.lunch, s.dinner]).filter(Boolean)}
       />
     </div>
   )
