@@ -1,6 +1,6 @@
 # The Scramble Cook
 
-A mobile-first meal planning PWA for households. Pick your meals for the week, lock the plan, and get a ready-to-use shopping list — automatically scaled to your servings.
+A meal scramble planning PWA for households. Pick your meals for the week, lock the plan, and get a ready-to-use shopping list — automatically scaled to your servings. Aimed to remove the mental burden of planning the meals for the week ahead with your own personal recipes or imported ones.  
 
 Built with React + Vite, Supabase (real-time sync), and Tailwind CSS. Deployed on Vercel.
 
