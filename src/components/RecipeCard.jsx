@@ -46,18 +46,14 @@ export default function RecipeCard({ recipe, isFavourite, onClick, onToggleFavou
 
       <h3 className="font-bold text-gray-800 text-sm leading-snug line-clamp-2 mb-2">{recipe.name}</h3>
 
-      <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-        <span className="text-xs px-2 py-0.5 rounded-full bg-cream-200 text-warm-gray font-medium">
-          ⏱ {recipe.prepTime + recipe.cookTime}m
-        </span>
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        <span className="text-xs text-warm-gray">⏱ {recipe.prepTime + recipe.cookTime}m</span>
+        {recipe.nutrition?.calories && (
+          <span className="text-xs text-warm-gray">· {recipe.nutrition.calories} kcal</span>
+        )}
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${proteinClass}`}>
           {recipe.protein}
         </span>
-        {recipe.nutrition?.calories && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-cream-200 text-warm-gray font-medium">
-            {recipe.nutrition.calories} kcal
-          </span>
-        )}
       </div>
 
       {recipe.tags.length > 0 && (
