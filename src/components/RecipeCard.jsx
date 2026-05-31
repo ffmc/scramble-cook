@@ -4,8 +4,23 @@ const DIFFICULTY_COLOURS = {
   hard:   'bg-red-100 text-red-600',
 }
 
+const PROTEIN_COLOURS = {
+  chicken:    'bg-terra-100 text-terra-500',
+  beef:       'bg-amber-100 text-amber-700',
+  shrimp:     'bg-blue-100 text-blue-700',
+  salmon:     'bg-orange-100 text-orange-700',
+  fish:       'bg-sky-100 text-sky-700',
+  lamb:       'bg-purple-100 text-purple-700',
+  pork:       'bg-pink-100 text-pink-700',
+  eggs:       'bg-yellow-100 text-yellow-700',
+  vegetarian: 'bg-sage-100 text-sage-500',
+}
+
+const PROTEIN_DEFAULT = 'bg-warm-line text-warm-gray'
+
 export default function RecipeCard({ recipe, isFavourite, onClick, onToggleFavourite }) {
   const difficultyClass = DIFFICULTY_COLOURS[recipe.difficulty] ?? DIFFICULTY_COLOURS.easy
+  const proteinClass    = PROTEIN_COLOURS[recipe.protein] ?? PROTEIN_DEFAULT
 
   return (
     <div
@@ -31,11 +46,17 @@ export default function RecipeCard({ recipe, isFavourite, onClick, onToggleFavou
 
       <h3 className="font-bold text-gray-800 text-sm leading-snug line-clamp-2 mb-2">{recipe.name}</h3>
 
-      <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="text-xs text-warm-gray">⏱ {recipe.prepTime + recipe.cookTime}m</span>
-        <span className="text-xs text-warm-gray capitalize">· {recipe.protein}</span>
+      <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+        <span className="text-xs px-2 py-0.5 rounded-full bg-cream-200 text-warm-gray font-medium">
+          ⏱ {recipe.prepTime + recipe.cookTime}m
+        </span>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${proteinClass}`}>
+          {recipe.protein}
+        </span>
         {recipe.nutrition?.calories && (
-          <span className="text-xs text-warm-gray">· {recipe.nutrition.calories} kcal</span>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-cream-200 text-warm-gray font-medium">
+            {recipe.nutrition.calories} kcal
+          </span>
         )}
       </div>
 

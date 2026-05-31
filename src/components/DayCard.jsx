@@ -117,11 +117,18 @@ function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot, onV
             <span className="text-xs font-semibold text-warm-muted">{slotLabel}</span>
           </div>
           <p className="text-sm font-semibold text-gray-800 leading-snug truncate">{recipe.name}</p>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <span className="text-xs text-warm-gray">⏱ {recipe.prepTime + recipe.cookTime}m</span>
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${proteinClass}`}>
+          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-cream-200 text-warm-gray font-medium">
+              ⏱ {recipe.prepTime + recipe.cookTime}m
+            </span>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${proteinClass}`}>
               {recipe.protein}
             </span>
+            {recipe.nutrition?.calories && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-cream-200 text-warm-gray font-medium">
+                {recipe.nutrition.calories} kcal
+              </span>
+            )}
           </div>
         </button>
         {!isLocked && (
