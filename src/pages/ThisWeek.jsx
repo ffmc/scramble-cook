@@ -5,6 +5,7 @@ import WeekSetup from '../components/WeekSetup'
 import DayCard from '../components/DayCard'
 import SwapPicker from '../components/SwapPicker'
 import RecipeDetail from '../components/RecipeDetail'
+import { getStoredHousehold, clearHousehold } from '../lib/household'
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 const DAY_LABELS = {
@@ -30,6 +31,13 @@ export default function ThisWeek() {
   const [confirmNewWeek, setConfirmNewWeek] = useState(false)
 
   const { slots, isLocked, mealType, servings } = currentWeek
+
+  const householdCode = getStoredHousehold()?.code
+
+  const handleLogout = () => {
+    clearHousehold()
+    window.location.reload()
+  }
 
   const hasAnyFilled = DAYS.some(d =>
     (mealType === 'lunch' || mealType === 'both')  ? slots[d].lunch  : false ||
@@ -58,11 +66,20 @@ export default function ThisWeek() {
 
   return (
     <div>
-      <header className="bg-terra-400 px-5 pt-4 pb-3">
-        <h1 className="font-display text-2xl font-bold text-cream-50 tracking-tight">The Scramble Cook</h1>
-        <p className="text-xs text-terra-200 mt-0.5">
-          {isLocked ? '🔒 Week locked' : 'Plan your week'}
-        </p>
+      <header className="bg-terra-400 px-5 pt-4 pb-3 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-cream-50 tracking-tight">The Scramble Cook</h1>
+          <p className="text-xs text-terra-200 mt-0.5">
+            {isLocked ? '🔒 Week locked' : 'Plan your week'}
+          </p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="shrink-0 text-[11px] font-medium text-terra-200 hover:text-cream-50 transition-colors text-right leading-tight mt-0.5"
+        >
+          {householdCode && <span className="block opacity-80">{householdCode}</span>}
+          Switch code
+        </button>
       </header>
 
       <WeekSetup />
