@@ -160,7 +160,7 @@ export default function ThisWeek() {
             mealType={mealType}
             isLocked={isLocked}
             recipes={recipes}
-            onSwap={(d, slot) => setSwapContext({ day: d, slot })}
+            onSwap={(d, slot, recipeId) => setSwapContext({ day: d, slot, recipeId })}
             onView={(id) => setDetailRecipe(recipes.find(r => r.id === id) ?? null)}
           />
         ))}
@@ -181,6 +181,7 @@ export default function ThisWeek() {
         slot={swapContext?.slot}
         recipes={recipes}
         onSelect={setSlot}
+        currentRecipeId={swapContext?.recipeId}
       />
     </div>
   )

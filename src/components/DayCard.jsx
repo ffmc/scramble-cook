@@ -67,7 +67,7 @@ function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot, onV
         <span className="text-xs font-semibold text-warm-muted">{slotLabel}</span>
         {!isLocked ? (
           <button
-            onClick={() => onSwap(dayKey, slot)}
+            onClick={() => onSwap(dayKey, slot, null)}
             className="text-xs text-terra-300 hover:text-terra-400 transition-colors"
           >
             + Add recipe
@@ -102,7 +102,7 @@ function SlotRow({ slot, dayKey, slots, isLocked, recipes, onSwap, skipSlot, onV
         {!isLocked && (
           <div className="flex items-center gap-1 shrink-0 mt-1">
             <button
-              onClick={() => onSwap(dayKey, slot)}
+              onClick={() => onSwap(dayKey, slot, recipeId)}
               className="p-1.5 rounded-lg hover:bg-cream-200 text-warm-gray hover:text-terra-400 transition-colors"
               title="Swap recipe"
             >
