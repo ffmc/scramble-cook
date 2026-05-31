@@ -31,7 +31,9 @@ export default function ThisWeek() {
   const [locking, setLocking]                = useState(false)
   const [confirmNewWeek, setConfirmNewWeek]   = useState(false)
   const [collapsedDays, setCollapsedDays]    = useState(new Set())
-  const [excludedProteins, setExcludedProteins] = useState([])
+  const [excludedProteins, setExcludedProteins]     = useState([])
+  const [excludePreviousWeek, setExcludePreviousWeek] = useState(true)
+  const [filtersOpen, setFiltersOpen]                = useState(false)
 
   const { slots, isLocked, mealType, servings, activeDays = DAYS } = currentWeek
 
@@ -79,7 +81,7 @@ export default function ThisWeek() {
   const hasFilledSlot = DAYS.some(d => slots[d].lunch || slots[d].dinner)
 
   const handleScramble = () => {
-    const newSlots = generateWeek({ mealType, weekHistory, favourites, recipes, activeDays, excludedProteins })
+    const newSlots = generateWeek({ mealType, weekHistory, favourites, recipes, activeDays, excludedProteins, excludePreviousWeek })
     setWeekSlots(newSlots)
   }
 
@@ -95,6 +97,8 @@ export default function ThisWeek() {
     startNewWeek()
     setConfirmNewWeek(false)
     setExcludedProteins([])
+    setExcludePreviousWeek(true)
+    setFiltersOpen(false)
   }
 
   return (
@@ -128,26 +132,69 @@ export default function ThisWeek() {
             >
               🎲 Scramble the Week
             </button>
-            {allProteins.length > 0 && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-warm-muted shrink-0">Exclude:</span>
-                {allProteins.map(protein => {
-                  const excluded = excludedProteins.includes(protein)
-                  return (
-                    <button
-                      key={protein}
-                      onClick={() => toggleExcludedProtein(protein)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors capitalize
-                        ${excluded
-                          ? 'bg-warm-line border-warm-line text-warm-muted line-through'
-                          : 'border-warm-line text-warm-gray hover:border-terra-300'}`}
-                    >
-                      {protein}
-                    </button>
-                  )
-                })}
-              </div>
-            )}
+            <div className="rounded-2xl border border-warm-line overflow-hidden">
+              <button
+                onClick={() => setFiltersOpen(v => !v)}
+                className="w-full flex items-center justify-between px-4 py-2.5 bg-white text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-warm-gray">Scramble filters</span>
+                  {(excludedProteins.length > 0 || !excludePreviousWeek) && (
+                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-terra-400 text-white font-bold leading-none">
+                      {excludedProteins.length + (!excludePreviousWeek ? 1 : 0)}
+                    </span>
+                  )}
+                </div>
+                <svg
+                  className={`w-4 h-4 text-warm-muted transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path d="M18 15l-6-6-6 6" />
+                </svg>
+              </button>
+
+              {filtersOpen && (
+                <div className="px-4 pb-4 pt-2 bg-white border-t border-warm-line space-y-3">
+                  {weekHistory.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-warm-muted mb-2">Last week</p>
+                      <button
+                        onClick={() => setExcludePreviousWeek(v => !v)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors
+                          ${excludePreviousWeek
+                            ? 'bg-warm-line border-warm-line text-warm-muted line-through'
+                            : 'border-warm-line text-warm-gray hover:border-terra-300'}`}
+                      >
+                        Exclude last week
+                      </button>
+                    </div>
+                  )}
+
+                  {allProteins.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-warm-muted mb-2">Proteins</p>
+                      <div className="flex flex-wrap gap-2">
+                        {allProteins.map(protein => {
+                          const excluded = excludedProteins.includes(protein)
+                          return (
+                            <button
+                              key={protein}
+                              onClick={() => toggleExcludedProtein(protein)}
+                              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors capitalize
+                                ${excluded
+                                  ? 'bg-warm-line border-warm-line text-warm-muted line-through'
+                                  : 'border-warm-line text-warm-gray hover:border-terra-300'}`}
+                            >
+                              {protein}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </>
         )}
 

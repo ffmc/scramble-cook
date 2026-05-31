@@ -2,9 +2,9 @@ const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'
 
 const emptyDaySlot = () => ({ lunch: null, dinner: null, lunchSkipped: false, dinnerSkipped: false })
 
-export function generateWeek({ mealType, weekHistory, favourites, recipes, activeDays = DAYS, excludedProteins = [] }) {
+export function generateWeek({ mealType, weekHistory, favourites, recipes, activeDays = DAYS, excludedProteins = [], excludePreviousWeek = true }) {
   const previousIds =
-    weekHistory.length > 0
+    excludePreviousWeek && weekHistory.length > 0
       ? Object.values(weekHistory[0].slots)
           .flatMap(s => [s.lunch, s.dinner])
           .filter(Boolean)
