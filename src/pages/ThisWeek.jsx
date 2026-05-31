@@ -32,7 +32,7 @@ export default function ThisWeek() {
   const [confirmNewWeek, setConfirmNewWeek] = useState(false)
   const [collapsedDays, setCollapsedDays]  = useState(new Set())
 
-  const { slots, isLocked, mealType, servings } = currentWeek
+  const { slots, isLocked, mealType, servings, activeDays = DAYS } = currentWeek
 
   const toggleCollapse = (day) =>
     setCollapsedDays(prev => {
@@ -42,7 +42,10 @@ export default function ThisWeek() {
     })
 
   useEffect(() => {
-    if (!isLocked) return
+    if (!isLocked) {
+      setCollapsedDays(new Set())
+      return
+    }
     const todayIdx = (new Date().getDay() + 6) % 7 // Mon=0 … Sun=6
     const pastDays = DAYS.slice(0, todayIdx)
     setCollapsedDays(prev => new Set([...prev, ...pastDays]))
@@ -63,7 +66,7 @@ export default function ThisWeek() {
   const hasFilledSlot = DAYS.some(d => slots[d].lunch || slots[d].dinner)
 
   const handleScramble = () => {
-    const newSlots = generateWeek({ mealType, weekHistory, favourites, recipes })
+    const newSlots = generateWeek({ mealType, weekHistory, favourites, recipes, activeDays })
     setWeekSlots(newSlots)
   }
 
@@ -167,7 +170,7 @@ export default function ThisWeek() {
         )}
 
         {/* Day cards */}
-        {DAYS.map(day => (
+        {DAYS.filter(day => activeDays.includes(day)).map(day => (
           <DayCard
             key={day}
             dayKey={day}

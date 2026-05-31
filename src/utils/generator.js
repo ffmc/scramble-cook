@@ -1,6 +1,8 @@
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
-export function generateWeek({ mealType, weekHistory, favourites, recipes }) {
+const emptyDaySlot = () => ({ lunch: null, dinner: null, lunchSkipped: false, dinnerSkipped: false })
+
+export function generateWeek({ mealType, weekHistory, favourites, recipes, activeDays = DAYS }) {
   const previousIds =
     weekHistory.length > 0
       ? Object.values(weekHistory[0].slots)
@@ -8,12 +10,13 @@ export function generateWeek({ mealType, weekHistory, favourites, recipes }) {
           .filter(Boolean)
       : []
 
-  const slots = {}
+  const slots = Object.fromEntries(DAYS.map(d => [d, emptyDaySlot()]))
   const usedProteins = []
+  const activeDaySet = new Set(activeDays)
 
   for (let i = 0; i < DAYS.length; i++) {
     const day = DAYS[i]
-    slots[day] = { lunch: null, dinner: null, lunchSkipped: false, dinnerSkipped: false }
+    if (!activeDaySet.has(day)) continue
 
     const prevProtein = i > 0 ? usedProteins[i - 1] : null
     const usedThisWeek = Object.values(slots)

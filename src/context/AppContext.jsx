@@ -12,6 +12,7 @@ const emptyWeek = () => ({
   isLocked: false,
   mealType: 'both',
   servings: 3,
+  activeDays: [...DAYS],
 })
 
 export const useStore = create(
@@ -40,6 +41,21 @@ export const useStore = create(
             },
           },
         })),
+
+      toggleActiveDay: (day) =>
+        set(s => {
+          const { activeDays, slots } = s.currentWeek
+          const removing = activeDays.includes(day)
+          return {
+            currentWeek: {
+              ...s.currentWeek,
+              activeDays: removing ? activeDays.filter(d => d !== day) : [...activeDays, day],
+              slots: removing
+                ? { ...slots, [day]: { lunch: null, dinner: null, lunchSkipped: false, dinnerSkipped: false } }
+                : slots,
+            },
+          }
+        }),
 
       swapDaySlots: (day) =>
         set(s => {
