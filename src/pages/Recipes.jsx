@@ -3,6 +3,7 @@ import { useStore } from '../context/AppContext'
 import RecipeCard from '../components/RecipeCard'
 import RecipeDetail from '../components/RecipeDetail'
 import ImportRecipe from '../components/ImportRecipe'
+import { deleteRecipe } from '../lib/sync'
 
 const PREP_RANGES = [
   { label: 'Under 20m', max: 20 },
@@ -156,7 +157,7 @@ export default function Recipes() {
       )}
 
       {/* Recipe grid */}
-      <div className="px-4 pb-4 grid grid-cols-2 gap-3">
+      <div className="px-4 pb-4 grid grid-cols-1 gap-3">
         {filtered.map(recipe => (
           <RecipeCard
             key={recipe.id}
@@ -177,6 +178,7 @@ export default function Recipes() {
         onClose={() => setSelectedId(null)}
         isFavourite={selectedRecipe ? favourites.includes(selectedRecipe.id) : false}
         onToggleFavourite={toggleFavourite}
+        onDelete={deleteRecipe}
       />
 
       <ImportRecipe isOpen={showImport} onClose={() => setShowImport(false)} />

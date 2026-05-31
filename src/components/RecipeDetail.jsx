@@ -11,13 +11,15 @@ const CATEGORY_LABELS = {
   condiments: '🍋 Condiments',
 }
 
-export default function RecipeDetail({ recipe, isOpen, onClose, isFavourite, onToggleFavourite }) {
+export default function RecipeDetail({ recipe, isOpen, onClose, isFavourite, onToggleFavourite, onDelete }) {
   const [localServings, setLocalServings] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const servings = localServings ?? recipe?.servings ?? 1
 
   const handleClose = () => {
     setLocalServings(null)
+    setConfirmDelete(false)
     onClose()
   }
 
@@ -161,6 +163,46 @@ export default function RecipeDetail({ recipe, isOpen, onClose, isFavourite, onT
           <div className="py-4">
             <h3 className="text-sm font-bold text-gray-700 mb-2">Notes</h3>
             <p className="text-sm text-warm-gray leading-relaxed">{recipe.notes}</p>
+          </div>
+        )}
+
+        {/* Delete */}
+        {onDelete && (
+          <div className="py-4 border-t border-warm-line">
+            {!confirmDelete ? (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="w-full py-2.5 rounded-xl border border-tomato-200 text-tomato-500 text-sm font-semibold
+                           hover:bg-tomato-50 transition-colors"
+              >
+                Delete recipe
+              </button>
+            ) : (
+              <div className="rounded-2xl border-2 border-tomato-200 bg-tomato-50 p-4 text-center">
+                <p className="text-sm font-semibold text-tomato-500 mb-1">
+                  Delete “{recipe.name}”?
+                </p>
+                <p className="text-xs text-warm-gray mb-3">
+                  {recipe._isGlobal
+                    ? 'This is a shared built-in recipe — deleting removes it for everyone in your household.'
+                    : 'This removes the recipe for your household.'}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="flex-1 py-2 rounded-xl border border-warm-line text-warm-gray text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => { onDelete(recipe.id, !!recipe._isGlobal); handleClose() }}
+                    className="flex-1 py-2 rounded-xl bg-tomato-400 text-white text-sm font-semibold"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

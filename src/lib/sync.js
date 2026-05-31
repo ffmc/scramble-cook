@@ -31,9 +31,11 @@ function applyRemote(row) {
 async function refreshRecipes() {
   const { data } = await supabase
     .from('recipes')
-    .select('data')
+    .select('data, household_id')
     .or(`household_id.is.null,household_id.eq.${householdId}`)
-  useStore.setState({ recipes: (data ?? []).map(r => r.data) })
+  useStore.setState({
+    recipes: (data ?? []).map(r => ({ ...r.data, _isGlobal: r.household_id === null })),
+  })
 }
 
 function schedulePush() {
@@ -96,6 +98,15 @@ export async function addRecipe(recipe) {
   const { error } = await supabase
     .from('recipes')
     .insert({ household_id: householdId, recipe_id: recipe.id, data: recipe })
+  if (error) throw error
+  await refreshRecipes()
+}
+
+export async function deleteRecipe(recipeId, isGlobal) {
+  const query = supabase.from('recipes').delete().eq('recipe_id', recipeId)
+  const { error } = isGlobal
+    ? await query.is('household_id', null)
+    : await query.eq('household_id', householdId)
   if (error) throw error
   await refreshRecipes()
 }

@@ -68,7 +68,7 @@ export default function ThisWeek() {
     <div>
       <header className="bg-terra-400 px-5 pt-4 pb-3 flex items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold text-cream-50 tracking-tight">The Scramble Cook</h1>
+          <h1 className="font-brand text-2xl font-extrabold text-cream-50 tracking-tight">The Scramble Cook</h1>
           <p className="text-xs text-terra-200 mt-0.5">
             {isLocked ? '🔒 Week locked' : 'Plan your week'}
           </p>
